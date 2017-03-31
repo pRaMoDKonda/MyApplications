@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="pramod.com.mystickynotes.activity.NewStickyNoteActivity"
+    android:background="#c5c499f5">
+
+    <LinearLayout
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/ui"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="#d1b48cf5">
+
+        <EditText
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/etTitle"
+            android:hint="Enter your Title"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center" />
+
+        <EditText
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/etContent"
+            android:hint="Enter your Content"
+            android:textSize="20sp"
+            android:inputType="textMultiLine"
+            android:lines="8"
+            android:minLines="6"
+            android:gravity="top|left"
+            android:maxLines="10"
+            android:scrollbars="vertical"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="center" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/ui"
+        android:layout_marginTop="20dp"
+        android:background="#d1b48cf5"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_save"
+            android:text="Save Note"
+            android:background="#4c98fa"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
+
