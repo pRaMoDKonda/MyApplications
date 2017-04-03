@@ -15,15 +15,18 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.NewStickyNoteActivity"
+        <activity
+            android:name=".activity.NewStickyNoteActivity"
             android:icon="@drawable/sticky_note">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pramod.com.mystickynotes.activity.StickyHome" />
         </activity>
+        <activity android:name=".activity.NewListStickNoteActivity"></activity>
     </application>
 
 </manifest>

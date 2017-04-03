@@ -8,6 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -53,15 +55,15 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DataViewHolder> {
 
     public class DataViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView noteIcon;
         ImageButton update, delete;
-        TextView textTitle, textContent;
+        TextView textTitle;
+        CheckBox textContent;
 
         public DataViewHolder(View itemView) {
             super(itemView);
 
             textTitle = (TextView) itemView.findViewById(R.id.txt_title);
-            textContent = (TextView) itemView.findViewById(R.id.txt_content);
+            textContent = (CheckBox) itemView.findViewById(R.id.txt_content);
 
             update = (ImageButton) itemView.findViewById(R.id.update);
             delete = (ImageButton) itemView.findViewById(R.id.delete);

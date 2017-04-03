@@ -3,7 +3,6 @@ package pramod.com.mystickynotes.activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.Toast;
@@ -26,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.realm.RealmResults;
-import io.realm.internal.modules.FilterableMediator;
 import pramod.com.mystickynotes.R;
 import pramod.com.mystickynotes.adapter.RVAdapter;
 import pramod.com.mystickynotes.model.StickyNote;
@@ -45,15 +42,25 @@ public class StickyHome extends AppCompatActivity implements Filterable {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        getSupportActionBar().setLogo(R.drawable.ic_launcher);
+        getSupportActionBar().setLogo(R.drawable.ic_launcher);
 
-        toolbar.setNavigationIcon(R.drawable.ic_launcher);
+//        toolbar.setNavigationIcon(R.drawable.ic_launcher);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(getApplicationContext(), NewStickyNoteActivity.class);
+                startActivity(i);
+//                finish();
+            }
+        });
+
+        FloatingActionButton fabList = (FloatingActionButton) findViewById(R.id.fab_list);
+        fabList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(), NewListStickNoteActivity.class);
                 startActivity(i);
 //                finish();
             }
