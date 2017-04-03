@@ -59,11 +59,12 @@ public class RealmManipulator {
     }
 
     public void updateStickyNote(StickyNote note) {
-        StickyNote stickyNote = realm.where(StickyNote.class).equalTo("id",note.getId()).findFirst();
+//        StickyNote stickyNote = realm.where(StickyNote.class).equalTo("id",note.getId()).findFirst();
         realm.beginTransaction();
-//        stickyNote.setId(note.getId());
+        realm.copyToRealmOrUpdate(note);
+       /* stickyNote.setId(note.getId());
         stickyNote.setNoteTitle(note.getNoteTitle());
-        stickyNote.setNoteContent(note.getNoteContent());
+        stickyNote.setNoteContent(note.getNoteContent());*/
         realm.commitTransaction();
 
         Log.e("DB","Realm Data Updated");

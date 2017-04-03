@@ -6,10 +6,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import io.realm.RealmResults;
 import pramod.com.mystickynotes.R;
@@ -87,6 +90,32 @@ public class NewStickyNoteActivity extends AppCompatActivity {
                         finish();
                     }
                 }
+            }
+        });
+
+        etContent.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    Toast.makeText(getApplicationContext(), etContent.getText(), Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+
+                return false;
+            }
+        });
+
+        etContent.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (actionId == KeyEvent.KEYCODE_ENTER)) {
+                    Toast.makeText(getApplicationContext(), etContent.getText(), Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+
+                return false;
             }
         });
     }

@@ -3,6 +3,7 @@ package pramod.com.mystickynotes.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.ContactsContract;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,12 +83,30 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DataViewHolder> {
                 public void onClick(View v) {
                     StickyNote stickyNote = stickyNotesList.get(getAdapterPosition());
 
+                    final StickyNote stickyNoteBackup = new StickyNote(stickyNote.getId(), stickyNote.getNoteTitle(), stickyNote.getNoteContent());
+
                     RealmManipulator.getRealmInstance(context).deleteStickyNote(stickyNote);
 
                     notifyDataSetChanged();
-                }
-            });
 
+                    Snackbar snackbar = Snackbar.make(v, "Note is Deleted", Snackbar.LENGTH_LONG)
+                            .setAction("UNDO DELETE", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    RealmManipulator.getRealmInstance(context).updateStickyNote(stickyNoteBackup);
+
+                                    notifyDataSetChanged();
+
+                                    Snackbar snackbar1 = Snackbar.make(view, "Note is Restored!", Snackbar.LENGTH_SHORT);
+                                    snackbar1.show();
+                                }
+                            });
+
+                    snackbar.show();
+                }
+
+            });
         }
     }
 }

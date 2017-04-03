@@ -56,6 +56,12 @@ public class StickyNote extends RealmObject implements Parcelable {
     public StickyNote() {
     }
 
+    public StickyNote(int id, String noteTitle, String noteContent) {
+        this.id = id;
+        this.noteTitle = noteTitle;
+        this.noteContent = noteContent;
+    }
+
     protected StickyNote(Parcel in) {
         this.id = in.readInt();
         this.noteTitle = in.readString();
