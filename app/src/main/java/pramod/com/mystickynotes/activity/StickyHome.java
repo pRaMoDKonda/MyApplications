@@ -9,23 +9,32 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.RealmResults;
 import pramod.com.mystickynotes.R;
+import pramod.com.mystickynotes.adapter.RVNoteRowAdapter;
 import pramod.com.mystickynotes.fragment.StickyListNoteFragment;
 import pramod.com.mystickynotes.fragment.StickyNoteFragment;
+import pramod.com.mystickynotes.model.StickyNote;
+import pramod.com.mystickynotes.realm.RealmNoteManipulator;
 
-public class StickyHome extends AppCompatActivity {
+public class StickyHome extends AppCompatActivity implements Filterable {
 
 
     @BindView(R.id.viewpager)
@@ -36,6 +45,10 @@ public class StickyHome extends AppCompatActivity {
 
     ViewPagerAdapter viewPagerAdapter;
 
+    RealmResults<StickyNote> realmNotes;
+
+    TitleFilter titleFilter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +56,10 @@ public class StickyHome extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-//        getSupportActionBar().setLogo(R.drawable.ic_launcher);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setLogo(R.drawable.ic_launcher);
 
         addViewPager(viewPager);
         viewPager.setOffscreenPageLimit(2);
@@ -52,6 +68,8 @@ public class StickyHome extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 //        tabLayout.getTabAt(0).setIcon(R.mipmap.ic_launcher);
 //        tabLayout.getTabAt(1).setIcon(R.mipmap.ic_launcher_round);
+
+        realmNotes = RealmNoteManipulator.getRealmNoteInstance(getApplicationContext()).getAllStickyNotes();
 
     }
 
@@ -91,7 +109,7 @@ public class StickyHome extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        new StickyNoteFragment().getFilter().filter(newText);
+                        getFilter().filter(newText);
                     }
                 });
 
@@ -149,5 +167,55 @@ public class StickyHome extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    public Filter getFilter() {
+
+        if (titleFilter == null) {
+            titleFilter = new TitleFilter();
+        }
+        return titleFilter;
+    }
+
+    public class TitleFilter extends Filter {
+
+        List<StickyNote> stringList;
+
+        @Override
+        protected FilterResults performFiltering(final CharSequence constraint) {
+            final FilterResults filterResults = new FilterResults();
+            final StickyNoteFragment noteFragment = (StickyNoteFragment) viewPagerAdapter.getItem(0);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    StickyNote[] resultArray = realmNotes.toArray(new StickyNote[realmNotes.size()]);
+                    stringList = new ArrayList<>(Arrays.asList(resultArray));
+
+                    if (constraint != null && constraint.length() > 0) {
+                        List<StickyNote> tempList = new ArrayList<>();
+                        for (StickyNote note : stringList) {
+                            if (note.getNoteTitle().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                                tempList.add(note);
+                            }
+                        }
+                        /*filterResults.count = tempList.size();
+                        filterResults.values = tempList;*/
+                        noteFragment.setAdapter(tempList);
+                    } else {
+
+                        /*filterResults.count = stringList.size();
+                        filterResults.values = stringList;*/
+                        noteFragment.setAdapter(realmNotes);
+                    }
+                }
+            });
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+
+        }
+    }
 
 }

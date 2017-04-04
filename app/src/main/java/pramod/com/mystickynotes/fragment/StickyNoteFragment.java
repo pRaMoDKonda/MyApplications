@@ -1,5 +1,6 @@
 package pramod.com.mystickynotes.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -28,12 +29,14 @@ import pramod.com.mystickynotes.model.StickyNote;
 import pramod.com.mystickynotes.realm.RealmNoteManipulator;
 
 
-public class StickyNoteFragment extends Fragment implements Filterable {
+public class StickyNoteFragment extends Fragment {
 
     RealmResults<StickyNote> realmNotes;
     RecyclerView recyclerView;
 
-    TitleFilter titleFilter;
+    public StickyNoteFragment() {
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,54 +83,5 @@ public class StickyNoteFragment extends Fragment implements Filterable {
 
         realmNotes = RealmNoteManipulator.getRealmNoteInstance(getContext()).getAllStickyNotes();
         setAdapter(realmNotes);
-    }
-
-    @Override
-    public Filter getFilter() {
-
-        if (titleFilter == null) {
-            titleFilter = new TitleFilter();
-        }
-        return titleFilter;
-    }
-
-    public class TitleFilter extends Filter {
-
-        List<StickyNote> stringList;
-
-        @Override
-        protected FilterResults performFiltering(final CharSequence constraint) {
-            final FilterResults filterResults = new FilterResults();
-            new StickyHome().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    StickyNote[] resultArray = realmNotes.toArray(new StickyNote[realmNotes.size()]);
-                    stringList = new ArrayList<>(Arrays.asList(resultArray));
-
-                    if (constraint != null && constraint.length() > 0) {
-                        List<StickyNote> tempList = new ArrayList<>();
-                        for (StickyNote note : stringList) {
-                            if (note.getNoteTitle().toLowerCase().contains(constraint.toString().toLowerCase())) {
-                                tempList.add(note);
-                            }
-                        }
-                        /*filterResults.count = tempList.size();
-                        filterResults.values = tempList;*/
-                        setAdapter(tempList);
-                    } else {
-
-                        /*filterResults.count = stringList.size();
-                        filterResults.values = stringList;*/
-                        setAdapter(realmNotes);
-                    }
-                }
-            });
-            return filterResults;
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-
-        }
     }
 }
