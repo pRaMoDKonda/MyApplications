@@ -2,99 +2,64 @@ package pramod.com.mystickynotes.activity;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import io.realm.RealmResults;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import pramod.com.mystickynotes.R;
-import pramod.com.mystickynotes.adapter.RVAdapter;
-import pramod.com.mystickynotes.model.StickyNote;
-import pramod.com.mystickynotes.realm.RealmManipulator;
+import pramod.com.mystickynotes.fragment.StickyListNoteFragment;
+import pramod.com.mystickynotes.fragment.StickyNoteFragment;
 
-public class StickyHome extends AppCompatActivity implements Filterable {
+public class StickyHome extends AppCompatActivity {
 
-    RealmResults<StickyNote> realmNotes;
-    RecyclerView recyclerView;
-    TitleFilter titleFilter;
+
+    @BindView(R.id.viewpager)
+    ViewPager viewPager;
+
+    @BindView(R.id.tabLayout)
+    TabLayout tabLayout;
+
+    ViewPagerAdapter viewPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sicky_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        getSupportActionBar().setLogo(R.drawable.ic_launcher);
+        ButterKnife.bind(this);
 
-//        toolbar.setNavigationIcon(R.drawable.ic_launcher);
+//        getSupportActionBar().setLogo(R.drawable.ic_launcher);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), NewStickyNoteActivity.class);
-                startActivity(i);
-//                finish();
-            }
-        });
+        addViewPager(viewPager);
+        viewPager.setOffscreenPageLimit(2);
 
-        FloatingActionButton fabList = (FloatingActionButton) findViewById(R.id.fab_list);
-        fabList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), NewListStickNoteActivity.class);
-                startActivity(i);
-//                finish();
-            }
-        });
-
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        realmNotes = RealmManipulator.getRealmInstance(getApplicationContext()).getAllStickyNotes();
-
-        if (realmNotes.size() != 0) {
-
-            Log.e("RealmData", realmNotes.get(0).getNoteTitle() + "\n" + realmNotes.get(0).getNoteContent());
-
-            setAdapter(realmNotes);
-        } else {
-            Toast.makeText(getApplicationContext(), "There are Nothing to Show", Toast.LENGTH_LONG).show();
-        }
+        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        tabLayout.setupWithViewPager(viewPager);
+//        tabLayout.getTabAt(0).setIcon(R.mipmap.ic_launcher);
+//        tabLayout.getTabAt(1).setIcon(R.mipmap.ic_launcher_round);
 
     }
 
-    public void setAdapter(List<StickyNote> noteList) {
-        LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(llm);
-
-        RVAdapter rvAdapter = new RVAdapter(noteList, getApplicationContext());
-        recyclerView.setAdapter(rvAdapter);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        realmNotes = RealmManipulator.getRealmInstance(getApplicationContext()).getAllStickyNotes();
-        setAdapter(realmNotes);
+    private void addViewPager(ViewPager viewPager) {
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPagerAdapter.addFragment(new StickyNoteFragment(), "Note");
+        viewPagerAdapter.addFragment(new StickyListNoteFragment(), "List Note");
+        viewPager.setAdapter(viewPagerAdapter);
     }
 
     @Override
@@ -126,7 +91,7 @@ public class StickyHome extends AppCompatActivity implements Filterable {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        getFilter().filter(newText);
+                        new StickyNoteFragment().getFilter().filter(newText);
                     }
                 });
 
@@ -138,23 +103,14 @@ public class StickyHome extends AppCompatActivity implements Filterable {
     }
 
     @Override
-    public Filter getFilter() {
-        if (titleFilter == null) {
-            titleFilter = new TitleFilter();
-        }
-        return titleFilter;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
             onResume();
-            Toast.makeText(getApplicationContext(),"List Refreshed..!",Toast.LENGTH_LONG).show();
-        }
-        else if (id == R.id.exit)
+            Toast.makeText(getApplicationContext(), "List Refreshed..!", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.exit)
             finish();
         else {
 
@@ -162,44 +118,36 @@ public class StickyHome extends AppCompatActivity implements Filterable {
         return super.onOptionsItemSelected(item);
     }
 
+    class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
-    public class TitleFilter extends Filter {
+        private final List<Fragment> FragmentList = new ArrayList<>();
+        private final List<String> TitleList = new ArrayList<>();
 
-        List<StickyNote> stringList;
-
-        @Override
-        protected FilterResults performFiltering(final CharSequence constraint) {
-            final FilterResults filterResults = new FilterResults();
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    StickyNote[] resultArray = realmNotes.toArray(new StickyNote[realmNotes.size()]);
-                    stringList = new ArrayList<>(Arrays.asList(resultArray));
-
-                    if (constraint != null && constraint.length() > 0) {
-                        List<StickyNote> tempList = new ArrayList<>();
-                        for (StickyNote note : stringList) {
-                            if (note.getNoteTitle().toLowerCase().contains(constraint.toString().toLowerCase())) {
-                                tempList.add(note);
-                            }
-                        }
-                        /*filterResults.count = tempList.size();
-                        filterResults.values = tempList;*/
-                        setAdapter(tempList);
-                    } else {
-
-                        /*filterResults.count = stringList.size();
-                        filterResults.values = stringList;*/
-                        setAdapter(realmNotes);
-                    }
-                }
-            });
-            return filterResults;
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
         }
 
         @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
+        public Fragment getItem(int position) {
+            return FragmentList.get(position);
+        }
 
+        @Override
+        public int getCount() {
+            return FragmentList.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return TitleList.get(position);
+//            return null;
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            FragmentList.add(fragment);
+            TitleList.add(title);
         }
     }
+
+
 }

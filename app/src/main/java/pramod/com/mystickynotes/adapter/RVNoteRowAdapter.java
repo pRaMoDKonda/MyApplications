@@ -2,16 +2,12 @@ package pramod.com.mystickynotes.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.provider.ContactsContract;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CheckedTextView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -19,18 +15,18 @@ import java.util.List;
 import pramod.com.mystickynotes.R;
 import pramod.com.mystickynotes.activity.NewStickyNoteActivity;
 import pramod.com.mystickynotes.model.StickyNote;
-import pramod.com.mystickynotes.realm.RealmManipulator;
+import pramod.com.mystickynotes.realm.RealmNoteManipulator;
 
 /**
  * Created by ipspl on 22/3/17.
  */
 
-public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DataViewHolder> {
+public class RVNoteRowAdapter extends RecyclerView.Adapter<RVNoteRowAdapter.DataViewHolder> {
 
     List<StickyNote> stickyNotesList;
     Context context;
 
-    public RVAdapter(List<StickyNote> stickyNotesList, Context context) {
+    public RVNoteRowAdapter(List<StickyNote> stickyNotesList, Context context) {
         this.stickyNotesList = stickyNotesList;
         this.context = context;
     }
@@ -57,13 +53,13 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DataViewHolder> {
 
         ImageButton update, delete;
         TextView textTitle;
-        CheckBox textContent;
+        TextView textContent;
 
         public DataViewHolder(View itemView) {
             super(itemView);
 
             textTitle = (TextView) itemView.findViewById(R.id.txt_title);
-            textContent = (CheckBox) itemView.findViewById(R.id.txt_content);
+            textContent = (TextView) itemView.findViewById(R.id.txt_content);
 
             update = (ImageButton) itemView.findViewById(R.id.update);
             delete = (ImageButton) itemView.findViewById(R.id.delete);
@@ -87,7 +83,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DataViewHolder> {
 
                     final StickyNote stickyNoteBackup = new StickyNote(stickyNote.getId(), stickyNote.getNoteTitle(), stickyNote.getNoteContent());
 
-                    RealmManipulator.getRealmInstance(context).deleteStickyNote(stickyNote);
+                    RealmNoteManipulator.getRealmNoteInstance(context).deleteStickyNote(stickyNote);
 
                     notifyDataSetChanged();
 
@@ -96,7 +92,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DataViewHolder> {
                                 @Override
                                 public void onClick(View view) {
 
-                                    RealmManipulator.getRealmInstance(context).updateStickyNote(stickyNoteBackup);
+                                    RealmNoteManipulator.getRealmNoteInstance(context).updateStickyNote(stickyNoteBackup);
 
                                     notifyDataSetChanged();
 

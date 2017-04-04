@@ -8,19 +8,20 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
+import pramod.com.mystickynotes.model.StickyListNote;
 import pramod.com.mystickynotes.model.StickyNote;
 
 /**
  * Created by ipspl on 22/3/17.
  */
 
-public class RealmManipulator {
+public class RealmNoteManipulator {
 
-    private static RealmManipulator dbManager;
+    private static RealmNoteManipulator dbManager;
     private static Realm realm;
     private String realmName = "RealmStickyNote";
 
-    private RealmManipulator(Context context) {
+    private RealmNoteManipulator(Context context) {
         if (realm == null) {
             Realm.init(context);
             RealmConfiguration configuration = new RealmConfiguration.Builder()
@@ -32,17 +33,17 @@ public class RealmManipulator {
         }
     }
 
-    public static RealmManipulator getRealmInstance(Context context) {
+    public static RealmNoteManipulator getRealmNoteInstance(Context context) {
 
         if (dbManager == null) {
-            dbManager = new RealmManipulator(context);
+            dbManager = new RealmNoteManipulator(context);
             Log.e("DB","DBManager Object is Created");
         }
 
         return dbManager;
     }
 
-    public void addOrUpdateRealmList(StickyNote note) {
+    public void addOrUpdateRealmNote(StickyNote note) {
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(note);
         realm.commitTransaction();
@@ -59,12 +60,8 @@ public class RealmManipulator {
     }
 
     public void updateStickyNote(StickyNote note) {
-//        StickyNote stickyNote = realm.where(StickyNote.class).equalTo("id",note.getId()).findFirst();
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(note);
-       /* stickyNote.setId(note.getId());
-        stickyNote.setNoteTitle(note.getNoteTitle());
-        stickyNote.setNoteContent(note.getNoteContent());*/
         realm.commitTransaction();
 
         Log.e("DB","Realm Data Updated");
