@@ -9,8 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -28,10 +26,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.RealmResults;
 import pramod.com.mystickynotes.R;
-import pramod.com.mystickynotes.adapter.RVNoteRowAdapter;
 import pramod.com.mystickynotes.fragment.StickyListNoteFragment;
 import pramod.com.mystickynotes.fragment.StickyNoteFragment;
+import pramod.com.mystickynotes.model.StickyListNote;
 import pramod.com.mystickynotes.model.StickyNote;
+import pramod.com.mystickynotes.realm.RealmListNoteManipulator;
 import pramod.com.mystickynotes.realm.RealmNoteManipulator;
 
 public class StickyHome extends AppCompatActivity implements Filterable {
@@ -46,6 +45,7 @@ public class StickyHome extends AppCompatActivity implements Filterable {
     ViewPagerAdapter viewPagerAdapter;
 
     RealmResults<StickyNote> realmNotes;
+    RealmResults<StickyListNote> realmNotesList;
 
     TitleFilter titleFilter;
 
@@ -70,6 +70,7 @@ public class StickyHome extends AppCompatActivity implements Filterable {
 //        tabLayout.getTabAt(1).setIcon(R.mipmap.ic_launcher_round);
 
         realmNotes = RealmNoteManipulator.getRealmNoteInstance(getApplicationContext()).getAllStickyNotes();
+        realmNotesList = RealmListNoteManipulator.getRealmListNoteInstance(getApplicationContext()).getAllStickyListNotes();
 
     }
 
@@ -136,6 +137,15 @@ public class StickyHome extends AppCompatActivity implements Filterable {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public Filter getFilter() {
+
+        if (titleFilter == null) {
+            titleFilter = new TitleFilter();
+        }
+        return titleFilter;
+    }
+
     class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         private final List<Fragment> FragmentList = new ArrayList<>();
@@ -167,45 +177,59 @@ public class StickyHome extends AppCompatActivity implements Filterable {
         }
     }
 
-
-    @Override
-    public Filter getFilter() {
-
-        if (titleFilter == null) {
-            titleFilter = new TitleFilter();
-        }
-        return titleFilter;
-    }
-
     public class TitleFilter extends Filter {
 
-        List<StickyNote> stringList;
+        List<StickyNote> stringNote;
+        List<StickyListNote> stringListNote;
 
         @Override
         protected FilterResults performFiltering(final CharSequence constraint) {
             final FilterResults filterResults = new FilterResults();
             final StickyNoteFragment noteFragment = (StickyNoteFragment) viewPagerAdapter.getItem(0);
+            final StickyListNoteFragment noteListFragment = (StickyListNoteFragment) viewPagerAdapter.getItem(1);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    StickyNote[] resultArray = realmNotes.toArray(new StickyNote[realmNotes.size()]);
-                    stringList = new ArrayList<>(Arrays.asList(resultArray));
+                    if (viewPager.getCurrentItem() == 0) {
+                        StickyNote[] resultArray = realmNotes.toArray(new StickyNote[realmNotes.size()]);
+                        stringNote = new ArrayList<>(Arrays.asList(resultArray));
 
-                    if (constraint != null && constraint.length() > 0) {
-                        List<StickyNote> tempList = new ArrayList<>();
-                        for (StickyNote note : stringList) {
-                            if (note.getNoteTitle().toLowerCase().contains(constraint.toString().toLowerCase())) {
-                                tempList.add(note);
+                        if (constraint != null && constraint.length() > 0) {
+                            List<StickyNote> tempList = new ArrayList<>();
+                            for (StickyNote note : stringNote) {
+                                if (note.getNoteTitle().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                                    tempList.add(note);
+                                }
                             }
-                        }
                         /*filterResults.count = tempList.size();
                         filterResults.values = tempList;*/
-                        noteFragment.setAdapter(tempList);
-                    } else {
+                            noteFragment.setAdapter(tempList);
+                        } else {
 
                         /*filterResults.count = stringList.size();
                         filterResults.values = stringList;*/
-                        noteFragment.setAdapter(realmNotes);
+                            noteFragment.setAdapter(realmNotes);
+                        }
+                    } else {
+                        StickyListNote[] resultArray = realmNotesList.toArray(new StickyListNote[realmNotesList.size()]);
+                        stringListNote = new ArrayList<>(Arrays.asList(resultArray));
+
+                        if (constraint != null && constraint.length() > 0) {
+                            List<StickyListNote> tempList = new ArrayList<>();
+                            for (StickyListNote note : stringListNote) {
+                                if (note.getListNoteTitle().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                                    tempList.add(note);
+                                }
+                            }
+                        /*filterResults.count = tempList.size();
+                        filterResults.values = tempList;*/
+                            noteListFragment.setAdapter(tempList);
+                        } else {
+
+                        /*filterResults.count = stringList.size();
+                        filterResults.values = stringList;*/
+                            noteListFragment.setAdapter(realmNotesList);
+                        }
                     }
                 }
             });
