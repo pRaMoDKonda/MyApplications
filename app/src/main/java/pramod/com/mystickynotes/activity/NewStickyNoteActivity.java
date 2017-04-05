@@ -1,11 +1,9 @@
 package pramod.com.mystickynotes.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -14,7 +12,7 @@ import android.widget.EditText;
 import io.realm.RealmResults;
 import pramod.com.mystickynotes.R;
 import pramod.com.mystickynotes.model.StickyNote;
-import pramod.com.mystickynotes.realm.RealmManipulator;
+import pramod.com.mystickynotes.realm.RealmNoteManipulator;
 
 public class NewStickyNoteActivity extends AppCompatActivity {
 
@@ -63,12 +61,12 @@ public class NewStickyNoteActivity extends AppCompatActivity {
                     if(btnSave.getText().equals("Update Note")){
                         parcelableStickyNote.setNoteTitle(etTitle.getText().toString());
                         parcelableStickyNote.setNoteContent(etContent.getText().toString());
-                        RealmManipulator.getRealmInstance(getApplicationContext()).updateStickyNote(parcelableStickyNote);
+                        RealmNoteManipulator.getRealmNoteInstance(getApplicationContext()).updateStickyNote(parcelableStickyNote);
                         finish();
                     }
                     else {
 
-                        RealmResults<StickyNote> realmNotes = RealmManipulator.getRealmInstance(getApplicationContext()).getAllStickyNotes();
+                        RealmResults<StickyNote> realmNotes = RealmNoteManipulator.getRealmNoteInstance(getApplicationContext()).getAllStickyNotes();
                         if (realmNotes.size() != 0)
                             id = realmNotes.last().getId();
 
@@ -77,7 +75,7 @@ public class NewStickyNoteActivity extends AppCompatActivity {
                         stickyNote.setNoteTitle(etTitle.getText().toString());
                         stickyNote.setNoteContent(etContent.getText().toString());
 
-                        RealmManipulator.getRealmInstance(getApplicationContext()).addOrUpdateRealmList(stickyNote);
+                        RealmNoteManipulator.getRealmNoteInstance(getApplicationContext()).addOrUpdateRealmNote(stickyNote);
 
                         Snackbar.make(v, "Your Note Save Successfully..!", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
